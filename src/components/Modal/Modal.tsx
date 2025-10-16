@@ -1,47 +1,57 @@
-import { useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import styles from './Modal.module.css';
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
+import styles from "./Modal.module.css";
 
 interface ModalProps {
-  children: React.ReactNode;
+  isOpen: boolean;
   onClose: () => void;
+  children: React.ReactNode;
 }
 
-export default function Modal({ children, onClose }: ModalProps) {
+export default function Modal({ isOpen, onClose, children }: ModalProps) {
   useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handleEsc);
+    if (!isOpen) return;
 
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = "hidden";
 
     return () => {
-      document.body.style.overflow = prev;
-      document.removeEventListener('keydown', handleEsc);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "auto";
     };
-  }, [onClose]);
+  }, [isOpen, onClose]);
 
-  const modal = (
-    <dialog
-      open
+  if (!isOpen) return null;
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    //клік по самому бекдропу
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  return createPortal(
+    <button
+      type="button"
       className={styles.backdrop}
-      onCancel={(e) => {
-        e.preventDefault(); // чтобы <dialog> не закрылся автоматически
-        onClose();
-      }}
+      onClick={handleBackdropClick}
     >
-      <button
-        className={styles.backdrop}
-        type="button"
-        aria-label="Close modal"
-        onClick={onClose}
-      />
-      <div className={styles.modal}>{children}</div>
-    </dialog>
+      <div className={styles.modal}>
+        {children}
+        <button
+          type="button"
+          className={styles.closeButton}
+          onClick={onClose}
+          aria-label="Close modal"
+        >
+          ×
+        </button>
+      </div>
+    </button>,
+    document.body
   );
-
-  const mount = document.getElementById('modal-root') ?? document.body;
-  return createPortal(modal, mount);
 }
