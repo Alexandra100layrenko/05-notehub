@@ -7,20 +7,24 @@ interface NoteListProps {
 }
 
 export default function NoteList({ notes, onDelete }: NoteListProps) {
-  if (!notes || notes.length === 0) return null;
+  if (!notes.length) {
+    return <p className={styles.empty}>No notes yet</p>;
+  }
 
   return (
     <ul className={styles.list}>
       {notes.map((note) => (
-        <li key={note.id} className={styles.listItem}>
-          <h2 className={styles.title}>{note.title}</h2>
+        <li key={note.id} className={styles.item}>
+          <h3 className={styles.title}>{note.title}</h3>
           <p className={styles.content}>{note.content}</p>
-          <div className={styles.footer}>
-            <span className={styles.tag}>{note.tag}</span>
-            <button className={styles.button} onClick={() => onDelete(note.id)} type="button">
-              Delete
-            </button>
-          </div>
+          <span className={styles.tag}>{note.tag}</span>
+          <button
+            type="button"
+            className={styles.delete}
+            onClick={() => onDelete(note.id)}
+          >
+            Delete
+          </button>
         </li>
       ))}
     </ul>
