@@ -1,0 +1,44 @@
+.form { 
+    display:flex; 
+    flex-direction:column; 
+    gap:12px; 
+}
+
+.formGroup { 
+    display:flex; 
+    flex-direction:column; 
+    gap:6px; 
+}
+.input, .select, .textarea { 
+    padding:8px; 
+    border-radius:6px; 
+    border:1px solid #ccc; 
+}
+
+.actions { 
+    display:flex; 
+    gap:8px; 
+    justify-content:flex-end; 
+}
+
+.cancelButton { 
+    background:#ccc; 
+    padding:8px 12px; 
+    border-radius:6px; 
+    border:none; 
+    cursor:pointer; 
+}
+
+.submitButton { 
+    background:#0a66c2; 
+    color:#fff; 
+    padding:8px 12px; 
+    border-radius:6px; 
+    border:none; 
+    cursor:pointer; 
+}
+
+.error { 
+    color:#d33; 
+    font-size:12px; 
+}
