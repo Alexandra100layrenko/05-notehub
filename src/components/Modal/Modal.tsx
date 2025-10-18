@@ -1,37 +1,58 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './Modal.module.css';
 
 interface ModalProps {
-  readonly isOpen: boolean;
-  readonly onClose: () => void;
-  readonly children: React.ReactNode;
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
 }
 
 export default function Modal({ isOpen, onClose, children }: ModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
+  // блокировка прокрутки
   useEffect(() => {
-    if (!dialogRef.current) return;
+    if (isOpen) {
+      const original = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = original;
+      };
+    }
+  }, [isOpen]);
 
-    const dialog = dialogRef.current;
-
-    if (isOpen && !dialog.open) dialog.showModal();
-    if (!isOpen && dialog.open) dialog.close();
-
-    const handleCancel = (e: Event) => {
-      e.preventDefault();
-      onClose();
+  // закрытие по Escape
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
     };
-
-    dialog.addEventListener('cancel', handleCancel);
-    return () => {
-      dialog.removeEventListener('cancel', handleCancel);
-    };
+    if (isOpen) document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
   }, [isOpen, onClose]);
 
-  return (
-    <dialog ref={dialogRef} className={styles.modal}>
-      {children}
-    </dialog>
+  if (!isOpen) return null;
+
+  return createPortal(
+    <>
+      {/* Бекдроп как интерактивная кнопка */}
+      <button
+        type="button"
+        className={styles.backdrop}
+        onClick={onClose}
+        aria-label="Close modal"
+      />
+      <div className={styles.modal}>
+        {/* Кнопка закрытия модалки */}
+        <button
+          type="button"
+          onClick={onClose}
+          className={styles.closeButton}
+          aria-label="Close modal"
+        >
+          ×
+        </button>
+        {children}
+      </div>
+    </>,
+    document.getElementById('modal-root') ?? document.body
   );
 }
