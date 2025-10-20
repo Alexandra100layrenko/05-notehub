@@ -23,15 +23,16 @@ export default function NoteForm({ onCancel }: NoteFormProps) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (payload: { title: string; content: string; tag: NoteTag }) => createNote(payload),
+    mutationFn: (payload: { title: string; content: string; tag: NoteTag }) =>
+      createNote(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
-    },
+    }
   });
 
   useEffect(() => {
     if (mutation.isSuccess) {
-      onCancel(); // close modal when created
+      onCancel(); // close modal
     }
   }, [mutation.isSuccess, onCancel]);
 
@@ -40,6 +41,7 @@ export default function NoteForm({ onCancel }: NoteFormProps) {
       initialValues={{ title: '', content: '', tag: 'Todo' as NoteTag }}
       validationSchema={Schema}
       onSubmit={(values, { setSubmitting }) => {
+        
         mutation.mutate(values);
         setSubmitting(false);
       }}

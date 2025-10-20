@@ -9,43 +9,41 @@ interface ModalProps {
 }
 
 export default function Modal({ isOpen, onClose, children }: ModalProps) {
-  // блокировка прокрутки
+  // Блокировка прокрутки при открытом модальном окне
   useEffect(() => {
-    if (isOpen) {
-      const original = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = original;
-      };
-    }
+    const original = document.body.style.overflow;
+    document.body.style.overflow = isOpen ? 'hidden' : original;
+    return () => {
+      document.body.style.overflow = original;
+    };
   }, [isOpen]);
 
-  // закрытие по Escape
+  // Закрытие по Escape
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
-    if (isOpen) document.addEventListener('keydown', handleKey);
+    document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  }, [isOpen, onClose]);
+  }, [onClose]);
 
   if (!isOpen) return null;
 
   return createPortal(
     <>
-      {/* Бекдроп как интерактивная кнопка */}
+      {/* Бекдроп как button — полностью интерактивный */}
       <button
         type="button"
         className={styles.backdrop}
         onClick={onClose}
         aria-label="Close modal"
       />
+
       <div className={styles.modal}>
-        {/* Кнопка закрытия модалки */}
         <button
           type="button"
-          onClick={onClose}
           className={styles.closeButton}
+          onClick={onClose}
           aria-label="Close modal"
         >
           ×
@@ -53,6 +51,6 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
         {children}
       </div>
     </>,
-    document.getElementById('modal-root') ?? document.body
+    document.getElementById('modal-root')!
   );
 }
