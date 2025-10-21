@@ -1,3 +1,4 @@
+// src/components/Modal/Modal.tsx
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './Modal.module.css';
@@ -13,9 +14,7 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
   useEffect(() => {
     const original = document.body.style.overflow;
     document.body.style.overflow = isOpen ? 'hidden' : original;
-    return () => {
-      document.body.style.overflow = original;
-    };
+    return () => { document.body.style.overflow = original; };
   }, [isOpen]);
 
   // Закрытие по Escape
@@ -30,8 +29,8 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
   if (!isOpen) return null;
 
   return createPortal(
-    <>
-      {/* Бекдроп как button — полностью интерактивный */}
+    <div className={styles.wrapper}>
+      {/* Бекдроп */}
       <button
         type="button"
         className={styles.backdrop}
@@ -39,7 +38,12 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
         aria-label="Close modal"
       />
 
-      <div className={styles.modal}>
+      {/* Модалка */}
+      <div
+        className={styles.modal}
+        role="dialog"
+        aria-modal="true"
+      >
         <button
           type="button"
           className={styles.closeButton}
@@ -50,7 +54,7 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
         </button>
         {children}
       </div>
-    </>,
+    </div>,
     document.getElementById('modal-root')!
   );
 }

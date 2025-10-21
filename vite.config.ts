@@ -8,5 +8,13 @@ export default defineConfig({
   plugins: [react()],
   build:{
     sourcemap: true,
-  }
+  },
+  server: {
+    host: 'localhost',
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      host: 'localhost',
+    },
+  },
 })
