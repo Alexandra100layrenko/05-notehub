@@ -80,9 +80,10 @@ export default function App() {
         {data?.notes?.length ? <NoteList notes={data.notes} /> : null}
       </main>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      {isModalOpen && (<Modal onClose={() => setIsModalOpen(false)}>
         <NoteForm onCancel={() => setIsModalOpen(false)} />
-      </Modal>
+      </Modal>)
+      }
 
       <Toaster position="top-right" />
     </div>
